@@ -1,0 +1,23 @@
+.region-europe {
+    color: #e7b819;
+}
+
+.region-africa {
+    color: #4f659c;
+}
+
+.region-america {
+    color: #4b814a;
+}
+
+.region-asia {
+    color: #cf4d5a;
+}
+
+.region-oceania {
+    color: #a552b9;
+}
+
+.region-default {
+    color: grey;
+}

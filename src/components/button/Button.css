@@ -1,0 +1,19 @@
+button {
+    background-color: #283618;
+    color: #fef8f6;
+    padding: 15px 30px;
+    margin: 20px 0;
+    border-radius: 30px;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    font-weight: bold;
+    font-family: inherit;
+    border: none;
+    box-shadow: 12px 14px 20px 2px rgba(0, 0, 0, 0.10);
+    cursor: pointer;
+    letter-spacing: 0.05rem;
+}
+
+button:hover {
+    background-color: #606C38;
+}
