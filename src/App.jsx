@@ -43,6 +43,7 @@ function App() {
             setSelectedCountry(mapped);
             setCountryInfo('');
             setCountries([]);
+            setListError(false);
         } catch (e) {
             console.error(e);
             setListError(true);
@@ -92,86 +93,105 @@ function App() {
                          alt="image of a world map"/>
                 </header>
                 <h1>World Regions</h1>
-                <Button
-                    text="Haal landen op"
-                    fetchCountry={fetchCountry}
-                    loading={loading === true}
-                />
                 <form>
-                <input
-                    type="text"
-                    value={countryInfo}
-                    placeholder="Bijvoorbeeld Nederland of Peru"
-                    onChange={(e) => setCountryInfo(e.target.value)}
-                />
-                <button
-                    onClick={handleClick}
-                >zoeken
-                </button>
+                    <input
+                        type="text"
+                        value={countryInfo}
+                        placeholder="Bijvoorbeeld Nederland of Peru"
+                        onChange={(e) => setCountryInfo(e.target.value)}
+                    />
+                    <button
+                        onClick={handleClick}
+                    >zoeken
+                    </button>
                 </form>
 
-                {selectedCountry && (
-                <section
-                    className="single-country-container">
-                    {selectedCountry && (
-                        <>
-                            <span
-                                className="flag-country"><img
-                                className="flag"
-                                src={selectedCountry.flags}
-                                alt={`flag of ${selectedCountry.name}`}/>
-                            <h2>{selectedCountry.name}</h2></span>
-                            <hr/>
-                            <p>{selectedCountry.name} is
-                                situated
-                                in {selectedCountry.region} and
-                                the capital
-                                is {selectedCountry.capital}
-                            </p>
-                            <p>
-                                It has a population
-                                of {amountPeople(selectedCountry.population)} and
-                                it borders
-                                with {selectedCountry.borders.length} countries
-                            </p>
-                            <p>Websites van be found
-                                on <strong>{selectedCountry.tld}</strong> domain&apos;s
-                            </p>
-                        </>
-                    )}
-                    {listError && (
-                        <p className="error-message">
-                            Land niet gevonden of er is iets misgegaan bij het ophalen van dit land.
-                        </p>
-                    )}
-                </section>
+                {listError && (
+                    <p className="error-message">
+                        Land niet gevonden of er is
+                        iets misgegaan bij het
+                        ophalen van dit land.
+                    </p>
                 )}
+
+                {selectedCountry && (
+                    <section
+                        className="single-country-container">
+                        <span className="flag-country">
+                          <img
+                              className="flag"
+                              src={selectedCountry.flags}
+                              alt={`flag of ${selectedCountry.name}`}
+                          />
+                          <h2>{selectedCountry.name}</h2>
+                        </span>
+                        <hr/>
+                        <p>
+                            {selectedCountry.name} is
+                            situated
+                            in {selectedCountry.region} and
+                            the capital is{" "}
+                            {selectedCountry.capital}
+                        </p>
+                        <p>
+                            It has a population
+                            of {amountPeople(selectedCountry.population)} and
+                            it borders
+                            with {selectedCountry.borders.length} countries
+                        </p>
+                        <p>
+                            Websites can be found
+                            on <strong>{selectedCountry.tld}</strong> domain&apos;s
+                        </p>
+
+                        {listError && (
+                            <p className="error-message">
+                                Land niet gevonden of er is
+                                iets misgegaan bij het
+                                ophalen van dit land.
+                            </p>
+                        )}
+                    </section>
+                )}
+
                 {error &&
                     <p className="error-message">Er is
                         iets
                         misgegaan bij het ophalen van de
                         data. Probeer het nog eens.</p>}
 
+                <Button
+                    text="Alle landen"
+                    fetchCountry={fetchCountry}
+                    loading={loading === true}
+                />
+
                 {countries.length > 0 && !selectedCountry && (
-                <CountryList>
-                    <ul>
-                        {countries.map((country, i) => (
-                            <li key={i} className="information-country">
-                                <div>
-                                    <img src={country.flags} alt="flag of country" />
-                                    <h4 className={regionColor(country.region)}>{country.name}</h4>
-                                </div>
-                                {country.population > 0 ? <p>Has a population of {country.population} people</p> : <p>Population unknown</p>}
-                            </li>
-                        ))}
-                    </ul>
-                </CountryList>
+                    <CountryList>
+                        <ul>
+                            {countries.map((country, i) => (
+                                <li key={i}
+                                    className="information-country">
+                                    <div>
+                                        <img
+                                            src={country.flags}
+                                            alt="flag of country"/>
+                                        <h4 className={regionColor(country.region)}>{country.name}</h4>
+                                    </div>
+                                    {country.population > 0 ?
+                                        <p>Has a population
+                                            of {country.population} people</p> :
+                                        <p>Population
+                                            unknown</p>}
+                                </li>
+                            ))}
+                        </ul>
+                    </CountryList>
                 )}
             </div>
 
         </>
     )
-
 }
 
 export default App
