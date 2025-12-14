@@ -6,6 +6,7 @@ import CountryList
     from "./components/countries/CountryList.jsx";
 import Button from "./components/button/Button.jsx";
 import amountPeople from "./helpers/amountPeople.jsx";
+import regionColor from "./helpers/regionColor.jsx";
 
 function App() {
     const [countries, setCountries] = React.useState([]);
@@ -66,13 +67,14 @@ function App() {
             });
             const countriesArray = response.data.map(country => ({
                 name: country.name.common ? country.name.common : "No country",
-                population: country.population ? country.population : "No population found",
+                population: country.population ? country.population : 0,
                 flags: country.flags.svg ? country.flags.svg : "No flag found ",
                 region: country.region ? country.region : "No region found ",
                 subregion: country.subregion ? country.subregion : "No region found ",
                 capital: country.capital ? country.capital : "No capital found ",
             }));
             setCountries(countriesArray);
+            setSelectedCountry(null);
         } catch (e) {
             console.error(e);
             toggleError(true)
@@ -99,13 +101,16 @@ function App() {
                 <input
                     type="text"
                     value={countryInfo}
+                    placeholder="Bijvoorbeeld Nederland of Peru"
                     onChange={(e) => setCountryInfo(e.target.value)}
                 />
                 <button
                     onClick={handleClick}
-                >search
+                >zoeken
                 </button>
                 </form>
+
+                {selectedCountry && (
                 <section
                     className="single-country-container">
                     {selectedCountry && (
@@ -134,23 +139,36 @@ function App() {
                             </p>
                         </>
                     )}
-
                     {listError && (
                         <p className="error-message">
                             Land niet gevonden of er is iets misgegaan bij het ophalen van dit land.
                         </p>
                     )}
                 </section>
-
+                )}
                 {error &&
                     <p className="error-message">Er is
                         iets
                         misgegaan bij het ophalen van de
                         data. Probeer het nog eens.</p>}
 
-                <CountryList countries={countries}/>
-
+                {countries.length > 0 && !selectedCountry && (
+                <CountryList>
+                    <ul>
+                        {countries.map((country, i) => (
+                            <li key={i} className="information-country">
+                                <div>
+                                    <img src={country.flags} alt="flag of country" />
+                                    <h4 className={regionColor(country.region)}>{country.name}</h4>
+                                </div>
+                                {country.population > 0 ? <p>Has a population of {country.population} people</p> : <p>Population unknown</p>}
+                            </li>
+                        ))}
+                    </ul>
+                </CountryList>
+                )}
             </div>
+
         </>
     )
 
