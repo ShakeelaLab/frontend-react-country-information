@@ -11,16 +11,15 @@ import regionColor from "./helpers/regionColor.jsx";
 function App() {
     const [countries, setCountries] = React.useState([]);
     const [error, toggleError] = React.useState(false);
-    const [listError, setListError] = React.useState(false);
+    const [listError, setListError] = React.useState(null);
     const [loading, toggleLoading] = React.useState(false);
     const [countryInfo, setCountryInfo] = React.useState('');
     const [selectedCountry, setSelectedCountry] = React.useState(null);
 
     async function handleClick(e) {
         e.preventDefault()
+        toggleLoading(true);
         try {
-            toggleLoading(true);
-            setListError(false);
             const response = await axios.get(
                 `https://restcountries.com/v3.1/name/${countryInfo}`,
                 {
@@ -35,7 +34,7 @@ function App() {
                 population: country.population,
                 flags: country.flags.svg,
                 region: country.region,
-                capital: country.capital ? country.capital[0] : "No capital found",
+                capital: country.capital[0] ? country.capital[0] : "No capital found",
                 borders: country.borders ?? [],
                 tld: country.tld ? country.tld : "."
             };
@@ -46,7 +45,7 @@ function App() {
             setListError(false);
         } catch (e) {
             console.error(e);
-            setListError(true);
+            setListError(e);
             setSelectedCountry(null);
         } finally {
             toggleLoading(false);
@@ -54,13 +53,13 @@ function App() {
     }
 
     async function fetchCountry() {
+        toggleLoading(true);
         try {
-            toggleLoading(true);
             toggleError(false);
             setListError(false)
             const response = await axios.get("https://restcountries.com/v3.1/all", {
                 params: {
-                    fields: "name,population,region,flags,region,subregion,capital,borders",
+                    fields: "name,population,region,flags,subregion,capital,borders"
                 }
             });
             response.data.sort(function (a, b) {
@@ -68,6 +67,7 @@ function App() {
             });
             const countriesArray = response.data.map(country => ({
                 name: country.name.common ? country.name.common : "No country",
+                officialName: country.name.official,
                 population: country.population ? country.population : 0,
                 flags: country.flags.svg ? country.flags.svg : "No flag found ",
                 region: country.region ? country.region : "No region found ",
@@ -76,6 +76,7 @@ function App() {
             }));
             setCountries(countriesArray);
             setSelectedCountry(null);
+            console.log(countriesArray);
         } catch (e) {
             console.error(e);
             toggleError(true)
@@ -93,7 +94,7 @@ function App() {
                          alt="image of a world map"/>
                 </header>
                 <h1>World Regions</h1>
-                <form>
+                <form onSubmit={handleClick}>
                     <input
                         type="text"
                         value={countryInfo}
@@ -101,7 +102,7 @@ function App() {
                         onChange={(e) => setCountryInfo(e.target.value)}
                     />
                     <button
-                        onClick={handleClick}
+                        type="submit"
                     >zoeken
                     </button>
                 </form>
@@ -110,7 +111,8 @@ function App() {
                     <p className="error-message">
                         Land niet gevonden of er is
                         iets misgegaan bij het
-                        ophalen van dit land.
+                        ophalen van dit land:
+                        <strong>{listError.message}</strong>
                     </p>
                 )}
 
@@ -121,7 +123,7 @@ function App() {
                           <img
                               className="flag"
                               src={selectedCountry.flags}
-                              alt={`flag of ${selectedCountry.name}`}
+                              alt={selectedCountry.name}
                           />
                           <h2>{selectedCountry.name}</h2>
                         </span>
@@ -129,9 +131,14 @@ function App() {
                         <p>
                             {selectedCountry.name} is
                             situated
-                            in {selectedCountry.region} and
-                            the capital is{" "}
-                            {selectedCountry.capital}
+                            in {selectedCountry.region}
+
+                            {selectedCountry.capital !== "No capital found" && (
+                                <> and the capital is {selectedCountry.capital} </>
+                            )}
+
+
+
                         </p>
                         <p>
                             It has a population
@@ -148,7 +155,7 @@ function App() {
                             <p className="error-message">
                                 Land niet gevonden of er is
                                 iets misgegaan bij het
-                                ophalen van dit land.
+                                ophalen van dit land:
                             </p>
                         )}
                     </section>
@@ -169,9 +176,8 @@ function App() {
                 {countries.length > 0 && !selectedCountry && (
                     <CountryList>
                         <ul>
-                            {countries.map((country, i) => (
-                                <li key={i}
-                                    className="information-country">
+                            {countries.map((country) => (
+                                <li key={country.officialName} className="information-country">
                                     <div>
                                         <img
                                             src={country.flags}
